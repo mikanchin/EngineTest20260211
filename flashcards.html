@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中1英単語帳 (200語)</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --bg2: #1e293b;
+            --txt: #f1f5f9;
+            --txt2: #94a3b8;
+            --muted: #64748b;
+            --blue: #38bdf8;
+            --purple: #a78bfa;
+            --green: #34d399;
+            --orange: #fb923c;
+            --pink: #f472b6;
+            --border: #334155;
+            --r: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .home-btn {
+            color: var(--txt2);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .home-btn:hover {
+            color: var(--blue);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .progress {
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+            color: var(--txt2);
+            font-weight: 500;
+        }
+
+        .scene {
+            width: 100%;
+            height: 360px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: var(--r);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card__face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: var(--r);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card__face--front {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+        }
+
+        .card__face--back {
+            background: linear-gradient(135deg, #334155, #1e293b);
+            transform: rotateY(180deg);
+        }
+
+        .word-en {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .word-type {
+            font-size: 0.9rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .word-jp {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--txt);
+            text-align: center;
+        }
+
+        .example {
+            margin-top: 24px;
+            font-size: 1rem;
+            color: var(--txt2);
+            text-align: center;
+            line-height: 1.6;
+            max-width: 80%;
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            margin-top: 40px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--txt);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        .btn:hover {
+            background: var(--border);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            border: none;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn.primary:hover {
+            box-shadow: 0 6px 28px rgba(56, 189, 248, 0.4);
+        }
+
+        .tap-hint {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 600px) {
+            .word-en {
+                font-size: 2.5rem;
+            }
+
+            .word-jp {
+                font-size: 1.8rem;
+            }
+
+            .scene {
+                height: 300px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="index.html" class="home-btn">← メニューに戻る</a>
+        <div style="font-weight: 700;">中1英単語帳</div>
+    </div>
+
+    <div class="container">
+        <div class="progress" id="progress">1 / 200</div>
+
+        <div class="scene" onclick="flip()">
+            <div class="card" id="card">
+                <div class="card__face card__face--front">
+                    <div class="word-type" id="typeFront">NOUN</div>
+                    <div class="word-en" id="wordEn">Apple</div>
+                    <div class="tap-hint">タップして意味を表示</div>
+                </div>
+                <div class="card__face card__face--back">
+                    <div class="word-type" id="typeBack">NOUN</div>
+                    <div class="word-jp" id="wordJp">りんご</div>
+                    <div class="example" id="example">I like apples.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="shuffleWords()">🎲 シャッフル</button>
+            <button class="btn" onclick="prev()">← 前へ</button>
+            <button class="btn primary" onclick="next()">次へ →</button>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            // Nouns (Animals)
+            { en: "cat", jp: "猫", type: "noun", ex: "I have a cat." },
+            { en: "dog", jp: "犬", type: "noun", ex: "The dog runs fast." },
+            { en: "bird", jp: "鳥", type: "noun", ex: "Look at that bird." },
+            { en: "fish", jp: "魚", type: "noun", ex: "Fish swim in the sea." },
+            { en: "rabbit", jp: "ウサギ", type: "noun", ex: "Rabbits have long ears." },
+            { en: "lion", jp: "ライオン", type: "noun", ex: "The lion is strong." },
+            { en: "tiger", jp: "トラ", type: "noun", ex: "Tigers are big cats." },
+            { en: "elephant", jp: "ゾウ", type: "noun", ex: "Elephants have long noses." },
+            { en: "monkey", jp: "サル", type: "noun", ex: "Monkeys like bananas." },
+            { en: "horse", jp: "馬", type: "noun", ex: "I can ride a horse." },
+
+            // Nouns (Food)
+            { en: "apple", jp: "りんご", type: "noun", ex: "An apple a day." },
+            { en: "orange", jp: "オレンジ", type: "noun", ex: "I like orange juice." },
+            { en: "banana", jp: "バナナ", type: "noun", ex: "Bananas are yellow." },
+            { en: "egg", jp: "卵", type: "noun", ex: "I eat an egg for breakfast." },
+            { en: "milk", jp: "牛乳", type: "noun", ex: "Drink your milk." },
+            { en: "water", jp: "水", type: "noun", ex: "Please give me some water." },
+            { en: "bread", jp: "パン", type: "noun", ex: "I buy bread every morning." },
+            { en: "rice", jp: "米 / ご飯", type: "noun", ex: "We eat rice every day." },
+            { en: "meat", jp: "肉", type: "noun", ex: "She doesn't eat meat." },
+            { en: "cake", jp: "ケーキ", type: "noun", ex: "Happy Birthday cake." },
+
+            // Nouns (School)
+            { en: "school", jp: "学校", type: "noun", ex: "I go to school by bus." },
+            { en: "teacher", jp: "先生", type: "noun", ex: "Mr. Tanaka is my teacher." },
+            { en: "student", jp: "生徒", type: "noun", ex: "She is a good student." },
+            { en: "book", jp: "本", type: "noun", ex: "Open your book." },
+            { en: "notebook", jp: "ノート", type: "noun", ex: "Write in your notebook." },
+            { en: "pen", jp: "ペン", type: "noun", ex: "This is a pen." },
+            { en: "pencil", jp: "鉛筆", type: "noun", ex: "I need a pencil." },
+            { en: "eraser", jp: "消しゴム", type: "noun", ex: "Can I use your eraser?" },
+            { en: "desk", jp: "机", type: "noun", ex: "Sit at your desk." },
+            { en: "chair", jp: "椅子", type: "noun", ex: "This chair is broken." },
+
+            // Verbs
+            { en: "play", jp: "遊ぶ / (スポーツ・楽器を)する", type: "verb", ex: "I play soccer." },
+            { en: "like", jp: "好む", type: "verb", ex: "I like sushi." },
+            { en: "have", jp: "持っている / 食べる", type: "verb", ex: "I have a pen." },
+            { en: "want", jp: "欲しい", type: "verb", ex: "I want a new bike." },
+            { en: "eat", jp: "食べる", type: "verb", ex: "Let's eat lunch." },
+            { en: "drink", jp: "飲む", type: "verb", ex: "He drinks coffee." },
+            { en: "run", jp: "走る", type: "verb", ex: "Don't run in the classroom." },
+            { en: "swim", jp: "泳ぐ", type: "verb", ex: "Can you swim?" },
+            { en: "study", jp: "勉強する", type: "verb", ex: "I study English hard." },
+            { en: "read", jp: "読む", type: "verb", ex: "Read this book." },
+            { en: "write", jp: "書く", type: "verb", ex: "Write your name." },
+            { en: "listen", jp: "聞く", type: "verb", ex: "Listen to the music." },
+            { en: "watch", jp: "見る", type: "verb", ex: "I watch TV every day." },
+            { en: "go", jp: "行く", type: "verb", ex: "Let's go home." },
+            { en: "come", jp: "来る", type: "verb", ex: "Come here, please." },
+            { en: "speak", jp: "話す", type: "verb", ex: "Do you speak English?" },
+            { en: "know", jp: "知っている", type: "verb", ex: "I don't know him." },
+            { en: "use", jp: "使う", type: "verb", ex: "May I use your phone?" },
+            { en: "cook", jp: "料理する", type: "verb", ex: "My father cooks dinner." },
+            { en: "wash", jp: "洗う", type: "verb", ex: "Wash your hands." },
+            { en: "clean", jp: "掃除する", type: "verb", ex: "I clean my room." },
+            { en: "open", jp: "開ける", type: "verb", ex: "Open the window." },
+            { en: "close", jp: "閉める", type: "verb", ex: "Close the door." },
+            { en: "sing", jp: "歌う", type: "verb", ex: "Let's sing a song." },
+            { en: "dance", jp: "踊る", type: "verb", ex: "She dances well." },
+            { en: "walk", jp: "歩く", type: "verb", ex: "I walk to school." },
+            { en: "stand", jp: "立つ", type: "verb", ex: "Stand up, please." },
+            { en: "sit", jp: "座る", type: "verb", ex: "Sit down." },
+            { en: "look", jp: "見る (look at)", type: "verb", ex: "Look at the blackboard." },
+            { en: "make", jp: "作る", type: "verb", ex: "I make breakfast." },
+
+            // Adjectives
+            { en: "good", jp: "良い", type: "adj", ex: "Have a good day." },
+            { en: "bad", jp: "悪い", type: "adj", ex: "That is a bad idea." },
+            { en: "big", jp: "大きい", type: "adj", ex: "Tokyo is a big city." },
+            { en: "small", jp: "小さい", type: "adj", ex: "This shirt is too small." },
+            { en: "long", jp: "長い", type: "adj", ex: "She has long hair." },
+            { en: "short", jp: "短い", type: "adj", ex: "Summer is short." },
+            { en: "old", jp: "古い / 年とった", type: "adj", ex: "This is an old car." },
+            { en: "new", jp: "新しい", type: "adj", ex: "I bought a new bag." },
+            { en: "hot", jp: "暑い / 熱い", type: "adj", ex: "It is hot today." },
+            { en: "cold", jp: "寒い / 冷たい", type: "adj", ex: "Water is cold." },
+            { en: "beautiful", jp: "美しい", type: "adj", ex: "The flower is beautiful." },
+            { en: "cute", jp: "かわいい", type: "adj", ex: "The dog is cute." },
+            { en: "happy", jp: "幸せな", type: "adj", ex: "I am happy." },
+            { en: "sad", jp: "悲しい", type: "adj", ex: "Don't be sad." },
+            { en: "busy", jp: "忙しい", type: "adj", ex: "I am busy now." },
+            { en: "easy", jp: "簡単な", type: "adj", ex: "English is easy." },
+            { en: "hard", jp: "難しい / 一生懸命な", type: "adj", ex: "Math is hard." },
+            { en: "interesting", jp: "面白い", type: "adj", ex: "This book is interesting." },
+            { en: "favorite", jp: "お気に入りの", type: "adj", ex: "My favorite color is blue." },
+            { en: "fine", jp: "元気な", type: "adj", ex: "I am fine, thank you." },
+
+            // Numbers
+            { en: "one", jp: "1", type: "number", ex: "I have one sister." },
+            { en: "two", jp: "2", type: "number", ex: "I have two brothers." },
+            { en: "three", jp: "3", type: "number", ex: "Three apples." },
+            { en: "four", jp: "4", type: "number", ex: "Four seasons." },
+            { en: "five", jp: "5", type: "number", ex: "Five fingers." },
+            { en: "six", jp: "6", type: "number", ex: "Six o'clock." },
+            { en: "seven", jp: "7", type: "number", ex: "Seven days a week." },
+            { en: "eight", jp: "8", type: "number", ex: "Eight years old." },
+            { en: "nine", jp: "9", type: "number", ex: "Number nine." },
+            { en: "ten", jp: "10", type: "number", ex: "Count to ten." },
+            { en: "eleven", jp: "11", type: "number", ex: "Eleven players." },
+            { en: "twelve", jp: "12", type: "number", ex: "Twelve months." },
+            { en: "twenty", jp: "20", type: "number", ex: "Twenty dollars." },
+            { en: "hundred", jp: "100", type: "number", ex: "One hundred yen." },
+            { en: "thousand", jp: "1000", type: "number", ex: "One thousand people." },
+
+            // Days of the Week
+            { en: "Sunday", jp: "日曜日", type: "noun", ex: "I relax on Sunday." },
+            { en: "Monday", jp: "月曜日", type: "noun", ex: "School starts on Monday." },
+            { en: "Tuesday", jp: "火曜日", type: "noun", ex: "See you on Tuesday." },
+            { en: "Wednesday", jp: "水曜日", type: "noun", ex: "Wednesday is middle of the week." },
+            { en: "Thursday", jp: "木曜日", type: "noun", ex: "Thursday comes after Wednesday." },
+            { en: "Friday", jp: "金曜日", type: "noun", ex: "Friday night." },
+            { en: "Saturday", jp: "土曜日", type: "noun", ex: "No school on Saturday." },
+
+            // Months
+            { en: "January", jp: "1月", type: "noun", ex: "New Year is in January." },
+            { en: "April", jp: "4月", type: "noun", ex: "School starts in April in Japan." },
+            { en: "August", jp: "8月", type: "noun", ex: "It is hot in August." },
+            { en: "December", jp: "12月", type: "noun", ex: "Christmas is in December." },
+
+            // Pronouns
+            { en: "I", jp: "私", type: "pronoun", ex: "I am a student." },
+            { en: "my", jp: "私の", type: "pronoun", ex: "This is my bag." },
+            { en: "you", jp: "あなた", type: "pronoun", ex: "You are kind." },
+            { en: "your", jp: "あなたの", type: "pronoun", ex: "Is this your pen?" },
+            { en: "he", jp: "彼", type: "pronoun", ex: "He is my friend." },
+            { en: "his", jp: "彼の", type: "pronoun", ex: "His name is Ken." },
+            { en: "she", jp: "彼女", type: "pronoun", ex: "She is a teacher." },
+            { en: "her", jp: "彼女の", type: "pronoun", ex: "Her car is red." },
+            { en: "we", jp: "私たち", type: "pronoun", ex: "We are family." },
+            { en: "they", jp: "彼ら/それら", type: "pronoun", ex: "They are playing soccer." },
+
+            // Colors
+            { en: "red", jp: "赤", type: "adj", ex: "A red apple." },
+            { en: "blue", jp: "青", type: "adj", ex: "The sky is blue." },
+            { en: "yellow", jp: "黄色", type: "adj", ex: "A yellow banana." },
+            { en: "green", jp: "緑", type: "adj", ex: "Green tea." },
+            { en: "white", jp: "白", type: "adj", ex: "White snow." },
+            { en: "black", jp: "黒", type: "adj", ex: "Black coffee." },
+
+            // Family
+            { en: "family", jp: "家族", type: "noun", ex: "I love my family." },
+            { en: "father", jp: "父", type: "noun", ex: "My father is tall." },
+            { en: "mother", jp: "母", type: "noun", ex: "My mother is kind." },
+            { en: "brother", jp: "兄弟", type: "noun", ex: "I have a brother." },
+            { en: "sister", jp: "姉妹", type: "noun", ex: "My sister is cute." },
+            { en: "grandfather", jp: "祖父", type: "noun", ex: "My grandfather is old." },
+            { en: "grandmother", jp: "祖母", type: "noun", ex: "My grandmother cooks well." },
+
+            // Other Nouns
+            { en: "house", jp: "家", type: "noun", ex: "This is my house." },
+            { en: "room", jp: "部屋", type: "noun", ex: "My room is clean." },
+            { en: "kitchen", jp: "台所", type: "noun", ex: "Mother is in the kitchen." },
+            { en: "bath", jp: "お風呂", type: "noun", ex: "Take a bath." },
+            { en: "garden", jp: "庭", type: "noun", ex: "There are flowers in the garden." },
+            { en: "park", jp: "公園", type: "noun", ex: "Let's play in the park." },
+            { en: "station", jp: "駅", type: "noun", ex: "Where is the station?" },
+            { en: "hospital", jp: "病院", type: "noun", ex: "He is in the hospital." },
+            { en: "library", jp: "図書館", type: "noun", ex: "Quiet in the library." },
+            { en: "store", jp: "店", type: "noun", ex: "I go to the grocery store." },
+            { en: "bus", jp: "バス", type: "noun", ex: "Take a bus." },
+            { en: "train", jp: "電車", type: "noun", ex: "The train is coming." },
+            { en: "car", jp: "車", type: "noun", ex: "My father has a car." },
+            { en: "bike", jp: "自転車", type: "noun", ex: "I ride my bike." },
+            { en: "bag", jp: "かばん", type: "noun", ex: "My bag is heavy." },
+            { en: "box", jp: "箱", type: "noun", ex: "What is in the box?" },
+            { en: "cup", jp: "カップ", type: "noun", ex: "A cup of tea." },
+            { en: "glass", jp: "コップ", type: "noun", ex: "A glass of water." },
+            { en: "dish", jp: "皿", type: "noun", ex: "Wash the dishes." },
+            { en: "bed", jp: "ベッド", type: "noun", ex: "Go to bed." },
+            { en: "computer", jp: "コンピュータ", type: "noun", ex: "I use a computer." },
+            { en: "phone", jp: "電話", type: "noun", ex: "Call me on the phone." },
+            { en: "watch", jp: "腕時計", type: "noun", ex: "This is a nice watch." },
+            { en: "umbrella", jp: "傘", type: "noun", ex: "Take an umbrella." },
+            { en: "rain", jp: "雨", type: "noun", ex: "It is rain today." },
+            { en: "snow", jp: "雪", type: "noun", ex: "Do you like snow?" },
+            { en: "sun", jp: "太陽", type: "noun", ex: "The sun is hot." },
+            { en: "moon", jp: "月", type: "noun", ex: "Look at the moon." },
+            { en: "star", jp: "星", type: "noun", ex: "Stars in the sky." },
+            { en: "flower", jp: "花", type: "noun", ex: "Beautiful flowers." },
+            { en: "tree", jp: "木", type: "noun", ex: "Climb a tree." },
+            { en: "money", jp: "お金", type: "noun", ex: "I need money." },
+            { en: "time", jp: "時間", type: "noun", ex: "What time is it?" },
+            { en: "name", jp: "名前", type: "noun", ex: "My name is Ken." },
+            { en: "friend", jp: "友達", type: "noun", ex: "We are friends." },
+            { en: "picture", jp: "写真 / 絵", type: "noun", ex: "Take a picture." },
+            { en: "letter", jp: "手紙", type: "noun", ex: "Write a letter." },
+            { en: "game", jp: "ゲーム", type: "noun", ex: "Play a video game." },
+            { en: "sport", jp: "スポーツ", type: "noun", ex: "Do you like sports?" },
+            { en: "soccer", jp: "サッカー", type: "noun", ex: "I play soccer." },
+            { en: "baseball", jp: "野球", type: "noun", ex: "Baseball is popular." },
+            { en: "tennis", jp: "テニス", type: "noun", ex: "Let's play tennis." },
+            { en: "music", jp: "音楽", type: "noun", ex: "I listen to music." },
+            { en: "piano", jp: "ピアノ", type: "noun", ex: "Play the piano." },
+            { en: "guitar", jp: "ギター", type: "noun", ex: "Play the guitar." },
+            { en: "breakfast", jp: "朝食", type: "noun", ex: "Eat breakfast." },
+            { en: "lunch", jp: "昼食", type: "noun", ex: "Lunch time." },
+            { en: "dinner", jp: "夕食", type: "noun", ex: "Cook dinner." },
+
+            // More Adjectives
+            { en: "many", jp: "たくさんの", type: "adj", ex: "I have many books." },
+            { en: "much", jp: "たくさんの(量)", type: "adj", ex: "How much is this?" },
+            { en: "all", jp: "すべての", type: "adj", ex: "All students." },
+            { en: "every", jp: "毎〜", type: "adj", ex: "Every day." },
+            { en: "high", jp: "高い", type: "adj", ex: "High mountain." },
+            { en: "low", jp: "低い", type: "adj", ex: "Low price." },
+            { en: "fast", jp: "速い", type: "adj", ex: "Run fast." },
+            { en: "slow", jp: "遅い", type: "adj", ex: "Walk slow." },
+            { en: "strong", jp: "強い", type: "adj", ex: "He is strong." },
+            { en: "weak", jp: "弱い", type: "adj", ex: "I feel weak." },
+            { en: "rich", jp: "金持ちの", type: "adj", ex: "He is rich." },
+            { en: "poor", jp: "貧しい / かわいそうな", type: "adj", ex: "Poor dog." },
+            { en: "young", jp: "若い", type: "adj", ex: "She is young." },
+            { en: "right", jp: "正しい / 右の", type: "adj", ex: "Turn right." },
+            { en: "left", jp: "左の", type: "adj", ex: "Turn left." },
+            { en: "nice", jp: "素敵な", type: "adj", ex: "Nice to meet you." },
+            { en: "kind", jp: "親切な", type: "adj", ex: "Be kind to others." },
+            { en: "hungry", jp: "お腹がすいた", type: "adj", ex: "I am hungry." },
+            { en: "tired", jp: "疲れた", type: "adj", ex: "I am tired." },
+            { en: "sleepy", jp: "眠い", type: "adj", ex: "I am sleepy." },
+            { en: "same", jp: "同じ", type: "adj", ex: "We have the same bag." },
+            { en: "different", jp: "違う", type: "adj", ex: "Different colors." },
+            { en: "ready", jp: "準備ができた", type: "adj", ex: "Are you ready?" },
+            { en: "sorry", jp: "ごめんなさい", type: "adj", ex: "I am sorry." },
+
+            // More Verbs
+            { en: "help", jp: "助ける", type: "verb", ex: "Help me." },
+            { en: "meet", jp: "会う", type: "verb", ex: "Nice to meet you." },
+            { en: "teach", jp: "教える", type: "verb", ex: "She teaches English." },
+            { en: "live", jp: "住む", type: "verb", ex: "I live in Japan." },
+            { en: "work", jp: "働く", type: "verb", ex: "He works hard." },
+            { en: "buy", jp: "買う", type: "verb", ex: "Buy a ticket." },
+            { en: "sell", jp: "売る", type: "verb", ex: "Sell flowers." },
+            { en: "get", jp: "手に入れる / 着く", type: "verb", ex: "Get a present." },
+            { en: "give", jp: "与える", type: "verb", ex: "Give me a pen." },
+            { en: "show", jp: "見せる", type: "verb", ex: "Show me your picture." },
+            { en: "enjoy", jp: "楽しむ", type: "verb", ex: "Enjoy your summer." },
+            { en: "start", jp: "始める", type: "verb", ex: "Let's start." },
+            { en: "stop", jp: "止まる / やめる", type: "verb", ex: "The bus stopped." },
+            { en: "finish", jp: "終える", type: "verb", ex: "Finish your homework." },
+            { en: "try", jp: "試す", type: "verb", ex: "Try this cake." },
+            { en: "need", jp: "必要とする", type: "verb", ex: "I need water." },
+            { en: "think", jp: "考える / 思う", type: "verb", ex: "I think so." },
+            { en: "say", jp: "言う", type: "verb", ex: "Say hello." },
+            { en: "ask", jp: "尋ねる", type: "verb", ex: "Ask him." },
+            { en: "wait", jp: "待つ", type: "verb", ex: "Wait for me." },
+            { en: "put", jp: "置く", type: "verb", ex: "Put it on the table." },
+            { en: "take", jp: "撮る / 取る / 連れていく", type: "verb", ex: "Take a picture." },
+            { en: "fly", jp: "飛ぶ", type: "verb", ex: "Birds fly." },
+            { en: "jump", jp: "跳ぶ", type: "verb", ex: "Jump high." },
+            { en: "sleep", jp: "眠る", type: "verb", ex: "Sleep well." },
+            { en: "call", jp: "電話する / 呼ぶ", type: "verb", ex: "Call me." },
+
+            // Question words
+            { en: "what", jp: "何", type: "question", ex: "What is this?" },
+            { en: "who", jp: "誰", type: "question", ex: "Who is he?" },
+            { en: "where", jp: "どこ", type: "question", ex: "Where are you?" },
+            { en: "when", jp: "いつ", type: "question", ex: "When is your birthday?" },
+            { en: "how", jp: "どのように / どれくらい", type: "question", ex: "How are you?" },
+            { en: "why", jp: "なぜ", type: "question", ex: "Why are you crying?" },
+            { en: "which", jp: "どちら", type: "question", ex: "Which do you like?" },
+
+            // Prepositions / Others
+            { en: "in", jp: "〜の中に", type: "preposition", ex: "In the box." },
+            { en: "on", jp: "〜の上に", type: "preposition", ex: "On the desk." },
+            { en: "at", jp: "〜で(場所/時間)", type: "preposition", ex: "At the station." },
+            { en: "to", jp: "〜へ", type: "preposition", ex: "Go to school." },
+            { en: "from", jp: "〜から", type: "preposition", ex: "From Japan." },
+            { en: "under", jp: "〜の下に", type: "preposition", ex: "Under the tree." },
+            { en: "near", jp: "近くに", type: "preposition", ex: "Near my house." },
+            { en: "yes", jp: "はい", type: "other", ex: "Yes, I do." },
+            { en: "no", jp: "いいえ", type: "other", ex: "No, I don't." },
+            { en: "please", jp: "お願いします", type: "other", ex: "Help me, please." },
+            { en: "thank", jp: "感謝する", type: "verb", ex: "Thank you." },
+            { en: "hello", jp: "こんにちは", type: "other", ex: "Hello, Tom." },
+            { en: "goodbye", jp: "さようなら", type: "other", ex: "Goodbye." },
+        ];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+
+        const card = document.getElementById('card');
+        const wordEn = document.getElementById('wordEn');
+        const wordJp = document.getElementById('wordJp');
+        const typeFront = document.getElementById('typeFront');
+        const typeBack = document.getElementById('typeBack');
+        const example = document.getElementById('example');
+        const progress = document.getElementById('progress');
+
+        function renderCard() {
+            const w = words[currentIndex];
+            wordEn.textContent = w.en;
+            wordJp.textContent = w.jp;
+            typeFront.textContent = w.type;
+            typeBack.textContent = w.type;
+            example.textContent = w.ex;
+            progress.textContent = `${currentIndex + 1} / ${words.length}`;
+
+            if (isFlipped) {
+                card.classList.remove('is-flipped');
+                isFlipped = false;
+            }
+        }
+
+        function flip() {
+            card.classList.toggle('is-flipped');
+            isFlipped = !isFlipped;
+        }
+
+        function next() {
+            if (currentIndex < words.length - 1) {
+                currentIndex++;
+                renderCard();
+            } else {
+                // Loop back to start or alert? Let's loop for endless practice
+                currentIndex = 0;
+                renderCard();
+            }
+        }
+
+        function prev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCard();
+            } else {
+                currentIndex = words.length - 1;
+                renderCard();
+            }
+        }
+
+        function shuffleWords() {
+            // Fisher-Yates shuffle
+            for (let i = words.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [words[i], words[j]] = [words[j], words[i]];
+            }
+            currentIndex = 0;
+            renderCard();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                next();
+            } else if (e.key === 'ArrowLeft') {
+                prev();
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                flip();
+            }
+        });
+
+        // Initialize
+        renderCard();
+
+    </script>
+</body>
+
+</html>
