@@ -74,7 +74,8 @@
             justify-content: center;
             padding: 40px 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 900px;
+            /* Wider for side-by-side */
             margin: 0 auto;
         }
 
@@ -85,49 +86,132 @@
             font-weight: 500;
         }
 
-        .scene {
+        /* NEW CARD STYLES */
+        .card-container {
             width: 100%;
-            height: 360px;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
-        .card {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
-            transform-style: preserve-3d;
+            background: var(--bg2);
             border-radius: var(--r);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            display: flex;
+            overflow: hidden;
+            min-height: 400px;
+            cursor: pointer;
+            position: relative;
+            perspective: 2000px;
+            /* Depth for 3D flip */
         }
 
-        .card.is-flipped {
-            transform: rotateY(180deg);
+        /* Left Side: English */
+        .card-pane {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: var(--bg2);
+            /* Ensure base bg */
         }
 
-        .card__face {
+        .pane-left {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-right: 1px solid var(--border);
+        }
+
+        /* Right Side: Japanese (Answer) */
+        .pane-right {
+            background: linear-gradient(135deg, #334155, #1e293b);
+            position: relative;
+        }
+
+        /* Page Turn Animation Elements */
+        .flipper {
             position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            /* Covers the right half */
+            height: 100%;
+            transform-origin: left center;
+            /* Spine */
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            z-index: 50;
+            pointer-events: none;
+            /* Let clicks pass through if needed, but mainly for visual */
+        }
+
+        .flipper.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .flipper-face {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: var(--r);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            box-sizing: border-box;
+            border-left: 1px solid var(--border);
+            /* Visual spine line */
+        }
+
+        .flipper-front {
+            /* Matches pane-right */
+            background: linear-gradient(135deg, #334155, #1e293b);
+            z-index: 2;
+        }
+
+        .flipper-back {
+            /* Matches pane-left */
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            transform: rotateY(180deg);
+            z-index: 1;
+            border-right: 1px solid var(--border);
+            border-left: none;
+        }
+
+        /* The Cover / Mask */
+        .answer-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg2);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 10;
+            transition: opacity 0.3s ease, visibility 0.3s;
             flex-direction: column;
-            padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 16px;
         }
 
-        .card__face--front {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
+        .answer-cover.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
-        .card__face--back {
-            background: linear-gradient(135deg, #334155, #1e293b);
-            transform: rotateY(180deg);
+        .cover-icon {
+            font-size: 3rem;
+            opacity: 0.2;
+            color: var(--txt);
+        }
+
+        .cover-text {
+            color: var(--muted);
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
         }
 
         .word-en {
@@ -162,7 +246,7 @@
             color: var(--txt2);
             text-align: center;
             line-height: 1.6;
-            max-width: 80%;
+            max-width: 90%;
         }
 
         .controls {
@@ -209,29 +293,41 @@
             box-shadow: 0 6px 28px rgba(56, 189, 248, 0.4);
         }
 
-        .tap-hint {
-            margin-top: 16px;
-            color: var(--muted);
-            font-size: 0.85rem;
-            opacity: 0.7;
-        }
+        @media (max-width: 700px) {
+            .card-container {
+                flex-direction: column;
+                min-height: 500px;
+            }
 
-        @media (max-width: 600px) {
+            .flipper {
+                width: 100%;
+                height: 50%;
+                top: 50%;
+                /* Starts at bottom */
+                transform-origin: top center;
+                right: auto;
+                left: 0;
+            }
+
+            .flipper.flipped {
+                transform: rotateX(180deg);
+            }
+
+            .flipper-back {
+                transform: rotateX(180deg);
+            }
+
+            .pane-left {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
             .word-en {
                 font-size: 2.5rem;
             }
 
             .word-jp {
                 font-size: 1.8rem;
-            }
-
-            .scene {
-                height: 300px;
-            }
-
-            .btn {
-                padding: 12px 20px;
-                font-size: 0.9rem;
             }
         }
     </style>
@@ -246,25 +342,23 @@
     <div class="container">
         <div class="progress" id="progress">1 / 200</div>
 
-        <div class="scene" onclick="flip()">
-            <div class="card" id="card">
-                <div class="card__face card__face--front">
-                    <div class="word-type" id="typeFront">NOUN</div>
-                    <div class="word-en" id="wordEn">Apple</div>
-                    <div class="tap-hint">タップして意味を表示</div>
-                </div>
-                <div class="card__face card__face--back">
-                    <div class="word-type" id="typeBack">NOUN</div>
-                    <div class="word-jp" id="wordJp">りんご</div>
-                    <div class="example" id="example">I like apples.</div>
-                </div>
+        <!-- Changing to Side-by-Side Layout -->
+        <div class="card-container" id="cardContainer">
+            <!-- Left: Answer (Previous Word) -->
+            <div class="card-pane pane-left" id="paneLeft">
+                <div id="leftContent" style="text-align:center; width:100%;"></div>
+            </div>
+
+            <!-- Right: Question (Current Word) -->
+            <div class="card-pane pane-right" id="paneRight">
+                <div id="rightContent" style="text-align:center; width:100%;"></div>
             </div>
         </div>
 
         <div class="controls">
-            <button class="btn" onclick="shuffleWords()">🎲 シャッフル</button>
-            <button class="btn" onclick="prev()">← 前へ</button>
-            <button class="btn primary" onclick="next()">次へ →</button>
+            <button class="btn" onclick="shuffleWords(event)">🎲 シャッフル</button>
+            <button class="btn" onclick="prev(event)">← 前へ</button>
+            <button class="btn primary" onclick="next(event)">次へ →</button>
         </div>
     </div>
 
@@ -517,65 +611,147 @@
         ];
 
         let currentIndex = 0;
-        let isFlipped = false;
+        let isAnimating = false;
 
-        const card = document.getElementById('card');
-        const wordEn = document.getElementById('wordEn');
-        const wordJp = document.getElementById('wordJp');
-        const typeFront = document.getElementById('typeFront');
-        const typeBack = document.getElementById('typeBack');
-        const example = document.getElementById('example');
+        // Flow mode: Right is Question, Left is Answer/Previous
+        const paneLeft = document.getElementById('paneLeft');
+        const leftContent = document.getElementById('leftContent');
+        const paneRight = document.getElementById('paneRight');
+        const rightContent = document.getElementById('rightContent');
         const progress = document.getElementById('progress');
 
-        function renderCard() {
-            const w = words[currentIndex];
-            wordEn.textContent = w.en;
-            wordJp.textContent = w.jp;
-            typeFront.textContent = w.type;
-            typeBack.textContent = w.type;
-            example.textContent = w.ex;
-            progress.textContent = `${currentIndex + 1} / ${words.length}`;
+        function render() {
+            // Render Right Pane (The Question)
+            const questionIdx = currentIndex % words.length;
+            const q = words[questionIdx];
 
-            if (isFlipped) {
-                card.classList.remove('is-flipped');
-                isFlipped = false;
+            if (currentIndex < 0) currentIndex = 0;
+
+            if (rightContent) {
+                rightContent.innerHTML = `
+                    <div class="word-type">${q.type}</div>
+                    <div class="word-en">${q.en}</div>
+                `;
             }
-        }
 
-        function flip() {
-            card.classList.toggle('is-flipped');
-            isFlipped = !isFlipped;
-        }
+            // Render Left Pane (The Answer / Previous)
+            if (currentIndex > 0) {
+                let answerIdx = (currentIndex - 1) % words.length;
+                if (answerIdx < 0) answerIdx = words.length - 1;
 
-        function next() {
-            if (currentIndex < words.length - 1) {
-                currentIndex++;
-                renderCard();
+                const a = words[answerIdx];
+                if (paneLeft) paneLeft.classList.add('is-active');
+                if (leftContent) {
+                    leftContent.innerHTML = `
+                        <div class="word-type">${a.type}</div>
+                        <div class="word-jp">${a.jp}</div>
+                        <div class="word-en" style="font-size: 1.5rem; margin-bottom:8px;">${a.en}</div>
+                        <div class="example">${a.ex}</div>
+                    `;
+                }
             } else {
-                // Loop back to start or alert? Let's loop for endless practice
-                currentIndex = 0;
-                renderCard();
+                if (paneLeft) paneLeft.classList.remove('is-active');
+                if (leftContent) {
+                    leftContent.innerHTML = `
+                        <div style="color:var(--muted); font-size: 0.9rem; text-align:center;">
+                            PRESS NEXT<br>TO START
+                        </div>
+                    `;
+                }
             }
+
+            // Progress text
+            if (progress) progress.textContent = `Word ${questionIdx + 1} / ${words.length}`;
         }
 
-        function prev() {
+        function createFlipper(currentWord) {
+            const flipper = document.createElement('div');
+            flipper.className = 'flipper';
+
+            // Front Face: The Content moving FROM Right (Current Question)
+            const front = document.createElement('div');
+            front.className = 'flipper-face flipper-front';
+            front.innerHTML = `
+                <div class="word-type">${currentWord.type}</div>
+                <div class="word-en">${currentWord.en}</div>
+            `;
+
+            // Back Face: The Content moving TO Left (Current Answer)
+            const back = document.createElement('div');
+            back.className = 'flipper-face flipper-back';
+            back.innerHTML = `
+                <div class="word-type">${currentWord.type}</div>
+                <div class="word-jp">${currentWord.jp}</div>
+                <div class="word-en" style="font-size: 1.5rem; margin-bottom:8px;">${currentWord.en}</div>
+                <div class="example">${currentWord.ex}</div>
+            `;
+
+            flipper.appendChild(front);
+            flipper.appendChild(back);
+
+            return flipper;
+        }
+
+        function next(event) {
+            if (event) event.stopPropagation();
+            if (isAnimating) return;
+
+            isAnimating = true;
+
+            const currentIdx = currentIndex % words.length;
+            const currentWord = words[currentIdx];
+
+            // Setup Flip Animation
+            const flipper = createFlipper(currentWord);
+            const container = document.getElementById('cardContainer');
+            container.appendChild(flipper);
+
+            // Increment to Next Word
+            currentIndex++;
+
+            // Update Underlying Right Pane (Next Question)
+            // We manually render it here to prevent Left Pane from jumping yet
+            const nextIdx = currentIndex % words.length;
+            const nextWord = words[nextIdx];
+            if (rightContent) {
+                rightContent.innerHTML = `
+                    <div class="word-type">${nextWord.type}</div>
+                    <div class="word-en">${nextWord.en}</div>
+                `;
+            }
+            if (progress) progress.textContent = `Word ${nextIdx + 1} / ${words.length}`;
+
+            // Trigger Animation
+            void flipper.offsetWidth;
+            flipper.classList.add('flipped');
+
+            // Cleanup
+            setTimeout(() => {
+                container.removeChild(flipper);
+                render(); // Final consistency check (updates Left Pane)
+                isAnimating = false;
+            }, 800);
+        }
+
+        function prev(event) {
+            if (event) event.stopPropagation();
+            if (isAnimating) return;
+
             if (currentIndex > 0) {
                 currentIndex--;
-                renderCard();
-            } else {
-                currentIndex = words.length - 1;
-                renderCard();
+                render();
             }
         }
 
-        function shuffleWords() {
+        function shuffleWords(event) {
+            if (event) event.stopPropagation();
             // Fisher-Yates shuffle
             for (let i = words.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [words[i], words[j]] = [words[j], words[i]];
             }
             currentIndex = 0;
-            renderCard();
+            render();
         }
 
         // Keyboard navigation
@@ -584,13 +760,11 @@
                 next();
             } else if (e.key === 'ArrowLeft') {
                 prev();
-            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                flip();
             }
         });
 
         // Initialize
-        renderCard();
+        render();
 
     </script>
 </body>
