@@ -137,7 +137,7 @@
             transform-origin: left center;
             /* Spine */
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            transition: transform 0.4s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             z-index: 50;
             pointer-events: none;
             /* Let clicks pass through if needed, but mainly for visual */
@@ -161,6 +161,7 @@
             padding: 40px;
             box-sizing: border-box;
             border-left: 1px solid var(--border);
+            transition: background 0.4s;
             /* Visual spine line */
         }
 
@@ -346,12 +347,12 @@
         <!-- Changing to Side-by-Side Layout -->
         <div class="card-container" id="cardContainer">
             <!-- Left: Answer (Previous Word) -->
-            <div class="card-pane pane-left" id="paneLeft">
+            <div class="card-pane pane-left" id="paneLeft" onclick="prev(event)">
                 <div id="leftContent" style="text-align:center; width:100%;"></div>
             </div>
 
             <!-- Right: Question (Current Word) -->
-            <div class="card-pane pane-right" id="paneRight">
+            <div class="card-pane pane-right" id="paneRight" onclick="next(event)">
                 <div id="rightContent" style="text-align:center; width:100%;"></div>
             </div>
         </div>
@@ -452,8 +453,7 @@
                 return `
                     <div class="word-type">${jpType}</div>
                     <div class="word-jp">${word.jp}</div>
-                    <div class="word-en" style="font-size: 1.5rem; margin-bottom:8px;">${word.en}</div>
-                    <div class="example">${word.ex}</div>
+                    <div class="example">${word.ex_jp || word.ex}</div>
                 `;
             }
         }
@@ -495,7 +495,7 @@
                 container.removeChild(flipper);
                 render(); // Updates Left Pane to 'currentWord' Answer
                 isAnimating = false;
-            }, 800);
+            }, 400);
         }
 
         function prev(event) {
@@ -550,7 +550,7 @@
                 container.removeChild(flipper);
                 render(); // Updates Right Pane to `prevWord` Question effectively
                 isAnimating = false;
-            }, 800);
+            }, 400);
         }
 
         function shuffleWords(event) {
