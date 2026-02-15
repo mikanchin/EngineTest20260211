@@ -244,3 +244,20 @@ const words = [
     { en: "even", jp: "〜でさえ", type: "adv", ex: "Even a child knows it." },
     { en: "well", jp: "上手に / よく", type: "adv", ex: "She sings well." }
 ];
+
+const typeMap = {
+    "noun": "名詞",
+    "verb": "動詞",
+    "adj": "形容詞",
+    "adv": "副詞",
+    "conj": "接続詞",
+    "prep": "前置詞",
+    "noun/adv": "名詞/副詞",
+    "noun/verb": "名詞/動詞",
+    "prep/conj": "前置詞/接続詞",
+    "prep/adv": "前置詞/副詞"
+};
+
+function getTypeJP(type) {
+    return typeMap[type] || type;
+}

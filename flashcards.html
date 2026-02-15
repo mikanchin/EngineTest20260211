@@ -442,14 +442,15 @@
         }
 
         function getWordContent(word, type) {
+            const jpType = getTypeJP(word.type);
             if (type === 'question') {
                 return `
-                    <div class="word-type">${word.type}</div>
+                    <div class="word-type">${jpType}</div>
                     <div class="word-en">${word.en}</div>
                 `;
             } else {
                 return `
-                    <div class="word-type">${word.type}</div>
+                    <div class="word-type">${jpType}</div>
                     <div class="word-jp">${word.jp}</div>
                     <div class="word-en" style="font-size: 1.5rem; margin-bottom:8px;">${word.en}</div>
                     <div class="example">${word.ex}</div>
